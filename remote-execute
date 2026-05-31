@@ -1,0 +1,18 @@
+#!/bin/bash
+# Sync local code to remote server and execute a command there.
+# Usage: sh remote-execute <command> [args...]
+# Example: sh remote-execute uv run test_student.py
+
+set -e
+
+if [ $# -eq 0 ]; then
+    echo "Usage: sh remote-execute <command> [args...]"
+    exit 1
+fi
+
+# Source remote-sync: runs rsync and exports REMOTE_DIR
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+source "$SCRIPT_DIR/remote-sync"
+
+echo "==> Running on remote: $*"
+ssh $ALIAS "cd $REMOTE_DIR && $*"

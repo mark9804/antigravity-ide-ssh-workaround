@@ -1,0 +1,34 @@
+#!/bin/bash
+# Sync local code to remote server and execute a command there.
+# Usage: sh remote-execute.sh <command> [args...]
+# Example: sh remote-execute.sh uv run test_student.py
+
+set -e
+
+LOCAL_DIR="$(cd "$(dirname "$0")" && pwd)/"
+REMOTE_DIR="[Remote Path]"
+ALIAS="[Alias]"
+
+EXCLUDES=(
+    .git
+    __pycache__
+    '*.pyc'
+    .venv
+    node_modules
+    .agents
+    .claude
+    '*.md'
+    tests
+    remote-execute
+    remote-sync
+    datasets
+)
+
+EXCLUDE_ARGS=()
+for pat in "${EXCLUDES[@]}"; do
+    EXCLUDE_ARGS+=(--exclude "$pat")
+done
+
+echo "==> Syncing code to remote server..."
+rsync -az "${EXCLUDE_ARGS[@]}" \
+    "$LOCAL_DIR" "$ALIAS:$REMOTE_DIR"
